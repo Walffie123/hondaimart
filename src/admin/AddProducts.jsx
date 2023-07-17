@@ -40,8 +40,15 @@ const AddProducts = () => {
         enterProductImg.name}`)
       const uploadTask = uploadBytesResumable(storageRef, enterProductImg)
         
-      uploadTask.on(() =>{
-        toast.error('images not uploaded!')
+      uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload progress:", progress.toFixed(2), "%");
+      },
+      (error) => {
+        setLoading(false);
+        toast.error("Images not uploaded!");
+        console.error(error);
       }, () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) => {
           await addDoc(docRef, {
